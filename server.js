@@ -9,7 +9,7 @@ var io = require('socket.io')(serv,{});
 var socketList = {};
 var currentColor = '#ffffff';
 
-var dev = true;
+var devMode = true;
 
 
 
@@ -27,7 +27,8 @@ function setupBash() {
     io.emit('message', {buffer: data, color: currentColor});
   });
   
-  if(!dev) { bash.stdin.write('docker exec -it ubuntu_bash bash\n'); }
+  if(devMode) {}
+  else { bash.stdin.write('docker exec -i ubuntu_bash bash\n'); }
 } 
 setupBash();
 
