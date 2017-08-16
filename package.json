@@ -1,0 +1,15 @@
+{
+  "name": "BishBashBosh",
+  "version": "1.0.0",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.13.4",
+    "socket.io": "^1.4.5"
+  },
+  "engines": {
+    "node": "4.6.x"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}

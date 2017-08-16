@@ -1,0 +1,30 @@
+body, p, input {
+    font-family: monospace;
+    font-size: 14px;
+    color: white;
+    border: none;
+    background: black;
+}
+p { 
+    white-space: pre; 
+}
+p, form, input {
+    width: 100%;
+    margin:0; 
+    padding:0; 
+}
+input:focus { 
+    outline: none; 
+    border: none; 
+}
+
+body::-webkit-scrollbar
+{
+	width: 10px;
+	background-color: black;
+}
+body::-webkit-scrollbar-thumb
+{
+	border-radius: 5px;
+	background-color: white;
+}
