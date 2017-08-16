@@ -9,8 +9,9 @@
     
     var socket = io();
     socket.on('message', function(data) {
-        var bufferString = String.fromCharCode.apply(null, new Uint8Array(data));
-        addData(bufferString);
+        var encodedString = String.fromCharCode.apply(null, new Uint8Array(data));
+        var decodedString = decodeURIComponent(escape(encodedString));
+        addData(decodedString);
     });
     
     

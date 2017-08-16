@@ -7,6 +7,7 @@ var bash = spawn('bash');
 
 var io = require('socket.io')(serv,{});
 var socketList = {};
+var currentColor = '#ffffff';
 
 
 
@@ -17,17 +18,14 @@ var socketList = {};
 ///////////////////////////////////////////////////////////////////////
 
 bash.stdout.on('data', function(data) {
-  console.log('Stdout:', data);
   io.emit('message', data);
 });
 
 bash.stderr.on('data', function(data) {
-  console.log('Stderr:', data);
   io.emit('message', data);
 });
 
 bash.on('exit', function (code) {
-  console.log('Exit:', code);
   io.emit('message', 'Shell exited: '+code);
 });
 
