@@ -22,9 +22,5 @@
     });
     
     $('input').focus();
-    $('body').click(function() {
-        $('input').focus();
-    });
-    
     
 })(jQuery, io);
