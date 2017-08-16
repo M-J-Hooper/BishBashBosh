@@ -20,7 +20,11 @@
         input.val('');
         return false;
     });
+    
     $('input').focus();
+    $('body').click(function() {
+        $('input').focus();
+    });
     
     
 })(jQuery, io);
