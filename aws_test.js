@@ -1,6 +1,5 @@
 var spawn = require('child_process').spawn;
 var bash = spawn('bash');
-var devMode = false;
 
 function decode(buffer) {
     var encodedString = String.fromCharCode.apply(null, new Uint8Array(buffer));
@@ -17,8 +16,7 @@ function setupBash() {
     console.log('Stderr:', decode(data));
   });
   
-  if(devMode) {}
-  else { bash.stdin.write('docker exec -i ubuntu_bash bash\n'); }
+  bash.stdin.write('docker exec -i ubuntu_bash bash\n');
 } 
 setupBash();
 

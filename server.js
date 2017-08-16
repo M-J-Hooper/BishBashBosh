@@ -9,8 +9,6 @@ var io = require('socket.io')(serv,{});
 var socketList = {};
 var currentColor = '#ffffff';
 
-var devMode = true;
-
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -27,8 +25,7 @@ function setupBash() {
     io.emit('message', {buffer: data, color: currentColor});
   });
   
-  if(devMode) {}
-  else { bash.stdin.write('docker exec -i ubuntu_bash bash\n'); }
+  bash.stdin.write('docker exec -i ubuntu_bash bash\n');
 } 
 setupBash();
 
@@ -49,15 +46,22 @@ io.sockets.on('connection', function(socket) {
   socket.on('command', function(command) {
     console.log('User '+socket.id+' sent command: '+command);
     currentColor = socketList[socket.id].color;
-    io.emit('message', {buffer: new Buffer('> '+command), color: currentColor});
+    var data = {buffer: new Buffer('> '+command), color: currentColor};
+    io.emit('message', data);
     
     if(command == 'exit') {
-      io.emit('message', {buffer: new Buffer('Nice try'), color: currentColor});
+      data.buffer = new Buffer('Nice try');
+      io.emit('message', data);
     }
     else if(command == 'bbbdev rs') {
       bash.kill('SIGINT');
       setupBash();
-      io.emit('message', {buffer: new Buffer('Bash restarted'), color: currentColor});
+      data.buffer = new Buffer('Bash restarted');
+      io.emit('message', data);
+    }
+    else if(command == 'about') {
+      data.buffer = new Buffer('BishBashBosh\nA multi-user Linux terminal in the cloud\nBy Matt Hooper\ngithub.com/M-J-Hooper/BishBashBosh');
+      io.emit('message', data);
     }
     else {
       bash.stdin.write(command+'\n');
@@ -81,5 +85,5 @@ app.get('/',function(req, res) {
 });
 app.use('/client',express.static(__dirname + '/client'));
 
-serv.listen(process.env.PORT || 1337);
+serv.listen(process.env.PORT || 3000);
 console.log('Server started.');
