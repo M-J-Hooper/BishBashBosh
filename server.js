@@ -21,13 +21,10 @@ function setupBash() {
   bash = spawn('bash');
   
   bash.stdout.on('data', function(data) {
-    io.emit('message', data);
+    io.emit('message', {buffer: data, color: currentColor});
   });
   bash.stderr.on('data', function(data) {
-    io.emit('message', data);
-  });
-  bash.on('exit', function (code) {
-    io.emit('message', 'Look what you\'ve gone and done! ('+code+')');
+    io.emit('message', {buffer: data, color: currentColor});
   });
   
   if(!dev) { bash.stdin.write('docker exec -it ubuntu_bash bash\n'); }
@@ -41,23 +38,28 @@ setupBash();
 
 io.sockets.on('connection', function(socket) {
   socket.id = Math.random();
-  socketList[socket.id] = socket;
+  socketList[socket.id] = {socket: socket, color: currentColor};
   console.log('User '+socket.id+' connected');
   
-  socket.on('command', function(data) {
-    console.log('User '+socket.id+' sent command: '+data);
-    io.emit('message', new Buffer('> '+data));
+  socket.on('color', function(color) {
+    socketList[socket.id].color = color;
+  });
+  
+  socket.on('command', function(command) {
+    console.log('User '+socket.id+' sent command: '+command);
+    currentColor = socketList[socket.id].color;
+    io.emit('message', {buffer: new Buffer('> '+command), color: currentColor});
     
-    if(data == 'exit') {
-      io.emit('message', new Buffer('Nice try'));
+    if(command == 'exit') {
+      io.emit('message', {buffer: new Buffer('Nice try'), color: currentColor});
     }
-    else if(data == 'bbbdev rs') {
+    else if(command == 'bbbdev rs') {
       bash.kill('SIGINT');
       setupBash();
-      io.emit('message', new Buffer('Bash restarted'));
+      io.emit('message', {buffer: new Buffer('Bash restarted'), color: currentColor});
     }
     else {
-      bash.stdin.write(data+'\n');
+      bash.stdin.write(command+'\n');
     }
   });
   
@@ -70,7 +72,7 @@ io.sockets.on('connection', function(socket) {
 
 
 ///////////////////////////////////////////////////////////////////////
-//Socket listeners
+//Static express setup
 ///////////////////////////////////////////////////////////////////////
 
 app.get('/',function(req, res) {

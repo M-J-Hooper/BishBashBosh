@@ -1,9 +1,9 @@
 body, p, input {
     font-family: monospace;
     font-size: 14px;
-    color: white;
     border: none;
     background: black;
+    font-weight: bold;
 }
 p { white-space: pre; }
 p, form {

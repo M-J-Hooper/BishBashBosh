@@ -1,17 +1,20 @@
-/*global jQuery, io*/
+/*global jQuery, io, randomColor*/
 
-(function($, io) {
-    function addData(str){
-        console.log(str);
-        $('div').append('<p>' + str + '</p>');
-        window.scrollTo(0,document.body.scrollHeight);
-    }
+(function($, io, rc) {
+    var color = randomColor({luminosity: 'light'});
+    $('span, input').css('color', color);
+    
     
     var socket = io();
-    socket.on('message', function(data) {
-        var encodedString = String.fromCharCode.apply(null, new Uint8Array(data));
+    socket.emit('color', color);
+    
+    socket.on('message', function(message) {
+        var encodedString = String.fromCharCode.apply(null, new Uint8Array(message.buffer));
         var decodedString = decodeURIComponent(escape(encodedString));
-        addData(decodedString);
+        
+        console.log(message.color);
+        $('div').append('<p style="color: '+message.color+';">'+decodedString+'</p>');
+        window.scrollTo(0, document.body.scrollHeight);
     });
     
     
@@ -24,4 +27,4 @@
     
     $('input').focus();
     
-})(jQuery, io);
+})(jQuery, io, randomColor);
