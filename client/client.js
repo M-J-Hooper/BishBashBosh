@@ -1,13 +1,15 @@
 /*global jQuery, io, randomColor*/
 
 (function($, io, rc) {
+    //generate new random color for user
     var color = randomColor({luminosity: 'light'});
     $('span, input').css('color', color);
     
-    
+    //connect and send color to assign to user
     var socket = io();
     socket.emit('color', color);
     
+    //decode terminal output and add to DOM
     socket.on('message', function(message) {
         var encodedString = String.fromCharCode.apply(null, new Uint8Array(message.buffer));
         var decodedString = decodeURIComponent(escape(encodedString));
@@ -16,6 +18,7 @@
         window.scrollTo(0, document.body.scrollHeight);
     });
     
+    //on up or down keys scroll through history of commands
     var historyPos = 0;
     var history = [];
     $(document).keydown(function(e) {
@@ -40,7 +43,7 @@
         }
     });
     
-    
+    //on submit check for empty command or send and add to history
     $('form').submit(function(e){
         var input = $('input');
         if(input.val().trim() == '') { input.val(''); }
