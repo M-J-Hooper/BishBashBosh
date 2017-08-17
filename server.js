@@ -63,6 +63,13 @@ io.sockets.on('connection', function(socket) {
       data.buffer = new Buffer('BishBashBosh\nA multi-user Linux terminal in the cloud!\ngithub.com/M-J-Hooper/BishBashBosh');
       io.emit('message', data);
     }
+    //allow restart
+    else if(command == 'exit' || command == 'restart') {
+      bash.kill('SIGINT');
+      setupBash();
+      data.buffer = new Buffer('Container restarted');
+      io.emit('message', data);
+    }
     //all other commands executed as normal
     else { bash.stdin.write(command+'\n'); }
   });
