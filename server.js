@@ -85,5 +85,6 @@ app.get('/',function(req, res) {
 });
 app.use('/client',express.static(__dirname + '/client'));
 
-serv.listen(process.env.PORT || 3000);
-console.log('Server started.');
+var port = 3000;
+serv.listen(port);
+console.log('Server started on port '+port);
