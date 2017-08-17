@@ -62,7 +62,7 @@ io.sockets.on('connection', function(socket) {
       io.emit('message', data);
     }
     //allow the server to be restarted
-    else if(command == 'bbbdev rs') {
+    else if(command == 'bbb rs') {
       bash.kill('SIGINT');
       setupBash();
       data.buffer = new Buffer('Bash restarted');
