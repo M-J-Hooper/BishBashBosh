@@ -1,13 +1,13 @@
 var spawn = require('child_process').spawn;
-var bash = spawn('bash');
 
 function decode(buffer) {
     var encodedString = String.fromCharCode.apply(null, new Uint8Array(buffer));
     return decodeURIComponent(escape(encodedString));
 }
 
+var bash;
 function setupBash() {
-  bash = spawn('bash');
+  bash = spawn('docker', ['run', '--rm', '-i', 'ubuntu', 'bash']);
   
   bash.stdout.on('data', function(data) {
     console.log('Stdout:', decode(data));
@@ -15,20 +15,20 @@ function setupBash() {
   bash.stderr.on('data', function(data) {
     console.log('Stderr:', decode(data));
   });
-  
-  bash.stdin.write('docker exec -i ubuntu_bash bash\n');
+  bash.on('exit', function(code) {
+    console.log('Exit:', code);
+    setupBash();
+  });
 } 
 setupBash();
 
 
 bash.stdin.write('ls\n');
-bash.stdin.write('pwd\n');
-bash.stdin.write('cd bin\n');
-bash.stdin.write('pwd\n');
+bash.stdin.write('mkdir TEST\n');
+bash.stdin.write('ls\n');
 
-bash.kill('SIGINT');
-setupBash();
+bash.stdin.write('exit\n');
 
-bash.stdin.write('pwd\n');
-bash.stdin.write('cd sys\n');
-bash.stdin.write('pwd\n');
+setTimeout(function() {
+  bash.stdin.write('cd TEST\n');
+}, 1000);

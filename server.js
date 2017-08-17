@@ -3,7 +3,6 @@ var app = express();
 var serv = require('http').Server(app);
 
 var spawn = require('child_process').spawn;
-var bash;
 
 var io = require('socket.io')(serv,{});
 var socketList = {};
@@ -17,8 +16,10 @@ var currentColor = '#ffffff';
 ///////////////////////////////////////////////////////////////////////
 
 //called to start and restart terminal
+var bash;
 function setupBash() {
-  bash = spawn('bash');
+  bash = spawn('bash'); //when in dev
+  //bash = spawn('docker', ['run', '--rm', '-i', 'ubuntu', 'bash']); //when running on ec2
   
   bash.stdout.on('data', function(data) {
     io.emit('message', {buffer: data, color: currentColor});
@@ -26,9 +27,10 @@ function setupBash() {
   bash.stderr.on('data', function(data) {
     io.emit('message', {buffer: data, color: currentColor});
   });
-  
-  //when running on ec2, create container and start bash session
-  bash.stdin.write('docker run --rm -i ubuntu bash\n');
+  bash.on('exit', function(code) {
+    io.emit('message', {buffer: 'Look what you\'ve gone and done...\nContainer restarted!', color: currentColor});
+    setupBash();
+  });
 } 
 setupBash();
 
@@ -56,27 +58,13 @@ io.sockets.on('connection', function(socket) {
     var data = {buffer: new Buffer('> '+command), color: currentColor};
     io.emit('message', data);
     
-    //prevent exit from docker container
-    if(command == 'exit') {
-      data.buffer = new Buffer('Nice try');
-      io.emit('message', data);
-    }
-    //allow the server to be restarted
-    else if(command == 'bbb rs') {
-      bash.kill('SIGINT');
-      setupBash();
-      data.buffer = new Buffer('Bash restarted');
-      io.emit('message', data);
-    }
     //custom about command for details
-    else if(command == 'about') {
-      data.buffer = new Buffer('BishBashBosh\nA multi-user Linux terminal in the cloud\ngithub.com/M-J-Hooper/BishBashBosh');
+    if(command == 'about') {
+      data.buffer = new Buffer('BishBashBosh\nA multi-user Linux terminal in the cloud!\ngithub.com/M-J-Hooper/BishBashBosh');
       io.emit('message', data);
     }
     //all other commands executed as normal
-    else {
-      bash.stdin.write(command+'\n');
-    }
+    else { bash.stdin.write(command+'\n'); }
   });
   
   socket.on('disconnect', function() {
