@@ -1,9 +1,14 @@
 /*global jQuery, io, randomColor*/
 
 (function($, io, rc) {
-    //generate new random color for user
+    //generate new random color for user and print startup message
     var color = randomColor({luminosity: 'light'});
     $('span, input').css('color', color);
+    var startMessage = 'BishBashBosh (http://github.com/M-J-Hooper/BishBashBosh)\n'
+                    +'A multi-user Linux terminal in the cloud.\n'
+                    +'To get started try `help\', `ls\' or `apt-get update\'.\n';
+    $('div').append('<p style="color: '+color+';">'+startMessage+'</p>');
+    window.scrollTo(0, document.body.scrollHeight);
     
     //connect and send color to assign to user
     var socket = io();

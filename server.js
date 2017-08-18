@@ -28,7 +28,7 @@ function setupBash() {
     io.emit('message', {buffer: data, color: currentColor});
   });
   bash.on('exit', function(code) {
-    io.emit('message', {buffer: 'Look what you\'ve gone and done...\nContainer restarted!', color: currentColor});
+    io.emit('message', {buffer: 'Container restarted', color: currentColor});
     setupBash();
   });
 } 
@@ -58,11 +58,6 @@ io.sockets.on('connection', function(socket) {
     var data = {buffer: new Buffer('> '+command), color: currentColor};
     io.emit('message', data);
     
-    //custom about command for details
-    if(command == 'about') {
-      data.buffer = new Buffer('BishBashBosh\nA multi-user Linux terminal in the cloud!\ngithub.com/M-J-Hooper/BishBashBosh');
-      io.emit('message', data);
-    }
     //allow restart
     else if(command == 'exit' || command == 'restart') {
       bash.kill('SIGINT');
