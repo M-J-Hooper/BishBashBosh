@@ -59,7 +59,7 @@ io.sockets.on('connection', function(socket) {
     io.emit('message', data);
     
     //allow restart
-    else if(command == 'exit' || command == 'restart') {
+    if(command == 'exit' || command == 'restart') {
       bash.kill('SIGINT');
       setupBash();
       data.buffer = new Buffer('Container restarted');
