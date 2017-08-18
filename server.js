@@ -28,8 +28,9 @@ function setupBash() {
     io.emit('message', {buffer: data, color: currentColor});
   });
   bash.on('exit', function(code) {
-    io.emit('message', {buffer: 'Container restarted', color: currentColor});
     setupBash();
+    var message = new Buffer('Container restarted');
+    io.emit('message', {buffer: message, color: currentColor});
   });
 } 
 setupBash();
@@ -58,14 +59,7 @@ io.sockets.on('connection', function(socket) {
     var data = {buffer: new Buffer('> '+command), color: currentColor};
     io.emit('message', data);
     
-    //allow restart
-    if(command == 'exit' || command == 'restart') {
-      bash.kill('SIGINT');
-      setupBash();
-      data.buffer = new Buffer('Container restarted');
-      io.emit('message', data);
-    }
-    //all other commands executed as normal
+    if(command == 'exit' || command == 'rs') { bash.kill(); }
     else { bash.stdin.write(command+'\n'); }
   });
   
