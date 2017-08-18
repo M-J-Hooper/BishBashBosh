@@ -18,8 +18,8 @@ var currentColor = '#ffffff';
 //called to start and restart terminal
 var bash;
 function setupBash() {
-  //bash = spawn('bash'); //when in dev
-  bash = spawn('docker', ['run', '--rm', '-i', 'ubuntu', 'bash']); //when running on ec2
+  bash = spawn('bash'); //when in dev
+  //bash = spawn('docker', ['run', '--rm', '-i', 'ubuntu', 'bash']); //when running on ec2
   
   bash.stdout.on('data', function(data) {
     io.emit('message', {buffer: data, color: currentColor});
@@ -59,7 +59,8 @@ io.sockets.on('connection', function(socket) {
     var data = {buffer: new Buffer('> '+command), color: currentColor};
     io.emit('message', data);
     
-    if(command == 'exit' || command == 'rs') { bash.kill(); }
+    if(command == 'exit' || command == 'rs') { bash.kill('SIGINT'); }
+    //all other commands executed as normal
     else { bash.stdin.write(command+'\n'); }
   });
   
