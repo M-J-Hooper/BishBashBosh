@@ -25,20 +25,18 @@ function aws_test() {
   
   
   bash.stdin.write('ls\n');
-  bash.stdin.write('mkdir TEST\n');
-  bash.stdin.write('ls\n');
-  
-  bash.stdin.write('exit\n');
+  bash.kill('SIGTERM');
   
   setTimeout(function() {
     bash.stdin.write('cd TEST\n');
+    bash.stdin.write('pwd\n');
   }, 1000);
 }
-//aws_test();
+aws_test();
 
 function nested_node_test() {
   setInterval(function() {
     console.log('Nested node test');
   }, 2000);
 }
-nested_node_test();
+//nested_node_test();
