@@ -4,7 +4,8 @@
   "main": "server.js",
   "dependencies": {
     "express": "^4.13.4",
-    "socket.io": "^1.4.5"
+    "socket.io": "^1.4.5",
+    "terminate": "^2.1.0"
   },
   "engines": {
     "node": "4.6.x"

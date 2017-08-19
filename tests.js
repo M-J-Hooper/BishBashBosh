@@ -1,5 +1,6 @@
 function aws_test() {
   var spawn = require('child_process').spawn;
+  var terminate = require('terminate');
   
   function decode(buffer) {
       var encodedString = String.fromCharCode.apply(null, new Uint8Array(buffer));
@@ -23,14 +24,18 @@ function aws_test() {
   } 
   setupBash();
   
-  
-  bash.stdin.write('ls\n');
-  bash.kill('SIGTERM');
+  console.log('mkdir TEST');
+  bash.stdin.write('mkdir TEST\n');
   
   setTimeout(function() {
-    bash.stdin.write('cd TEST\n');
-    bash.stdin.write('pwd\n');
+    console.log('Kill');
+    terminate(bash.pid, function() {});
   }, 1000);
+  
+  setTimeout(function() {
+    console.log('ls');
+    bash.stdin.write('ls\n');
+  }, 2000);
 }
 aws_test();
 

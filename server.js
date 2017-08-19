@@ -3,6 +3,7 @@ var app = express();
 var serv = require('http').Server(app);
 
 var spawn = require('child_process').spawn;
+var terminate = require('terminate');
 
 var io = require('socket.io')(serv,{});
 var socketList = {};
@@ -64,7 +65,9 @@ io.sockets.on('connection', function(socket) {
       data.buffer = new Buffer('Permission denied');
       io.emit('message', data);
     }
-    if(command == 'exit' || command == 'rs') { bash.kill('SIGTERM'); }
+    if(command == 'exit' || command == 'rs') { 
+      terminate(bash.pid, function() {}); 
+    }
     else { bash.stdin.write(command+'\n'); }
   });
   
