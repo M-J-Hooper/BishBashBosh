@@ -19,7 +19,7 @@ var currentColor = '#ffffff';
 //called to start and restart terminal
 var bash;
 function setupBash() {
-  //bash = spawn('bash'); //when in dev
+  // bash = spawn('bash'); //when in dev
   bash = spawn('docker', ['run', '--rm', '-i', 'ubuntu', 'bash']); //when running on ec2
   
   bash.stdout.on('data', function(data) {
@@ -60,14 +60,26 @@ io.sockets.on('connection', function(socket) {
     var data = {buffer: new Buffer('> '+command), color: currentColor};
     io.emit('message', data);
     
-    var badCommands = ['yes'];
-    if(badCommands.indexOf(command) >= 0) {
-      data.buffer = new Buffer('Permission denied');
+    //check if a bad word is included in command
+    var badWords = ['yes'];
+    var badWord;
+    var ok = true;
+    for(var word in badWords) {
+      if(command.indexOf(badWords[word]) >= 0) { 
+        ok = false; 
+        badWord = badWords[word];
+      }
+    }
+    //if bad word then notify and stop
+    if(!ok) {  
+      data.buffer = new Buffer('Permission denied: '+badWord);
       io.emit('message', data);
     }
-    if(command == 'exit' || command == 'rs') { 
+    //if no bad words then check for special commands 
+    else if(command == 'exit') { 
       terminate(bash.pid, function() {}); 
     }
+    //execute command normally
     else { bash.stdin.write(command+'\n'); }
   });
   
